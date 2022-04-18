@@ -21,11 +21,11 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 //
 // Select the network you want to deploy to here:
 //
-const defaultNetwork = "mumbai";
+const defaultNetwork = "matic";
 
 function mnemonic() {
   try {
-    return fs.readFileSync("./mnemonic.txt").toString().trim();
+    return fs.readFileSync("./mnemonic-prod.txt").toString().trim();
   } catch (e) {
     if (defaultNetwork !== "localhost") {
       console.log("☢️ WARNING: No mnemonic file created for a deploy account. Try `yarn run generate` and then `yarn run account`.")
@@ -64,7 +64,7 @@ module.exports = {
       }
     },
     mumbai: {
-      url: 'https://matic-mumbai.chainstacklabs.com/',
+      url: 'https://rpc-mumbai.matic.today/',
       gasPrice: 10000000000,
       accounts: {
         mnemonic: mnemonic(),

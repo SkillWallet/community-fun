@@ -36,7 +36,7 @@ contract IDHactivist is IERC721Metadata, ERC721, Ownable {
         emit Claimed();
     }
 
-    function whitelistRole(uint256 role, address[] calldata recipients)
+    function whitelist(uint256 role, address[] calldata recipients)
         public
         onlyOwner
     {

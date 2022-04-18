@@ -20,7 +20,7 @@ contract("IDHactivist", (accounts) => {
   describe("IDHactivist", async () => {
     it("Should fail whitelisting if role is invalid", async () => {
       await truffleAssert.reverts(
-        idHactavist.whitelistRole(1, [
+        idHactavist.whitelist(1, [
           whitelisted.address,
           whitelisted2.address,
           ethers.Wallet.createRandom().address,
@@ -30,7 +30,7 @@ contract("IDHactivist", (accounts) => {
     });
     it("Should fail if whitelisting addresses are > 100", async () => {
       await truffleAssert.reverts(
-        idHactavist.whitelistRole(2, [
+        idHactavist.whitelist(2, [
           whitelisted.address,
           whitelisted2.address,
           ethers.Wallet.createRandom().address,
@@ -183,7 +183,7 @@ contract("IDHactivist", (accounts) => {
       );
     });
     it("Should whitelist some addresses", async () => {
-      await idHactavist.whitelistRole(2, [
+      await idHactavist.whitelist(2, [
         whitelisted.address,
         whitelisted2.address,
         ethers.Wallet.createRandom().address,
