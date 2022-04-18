@@ -4,40 +4,47 @@ pragma solidity ^0.6.10;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract IDHactivist is IERC721Metadata, ERC721 {
+contract IDHactivist is IERC721Metadata, ERC721, Ownable {
+    event Whitelisted();
+    event Claimed();
+
     using Counters for Counters.Counter;
 
     Counters.Counter private currentTokenId;
     mapping(uint256 => uint256) public tokenToRole;
     mapping(address => bool) public isInitialOwner;
+    mapping(address => uint256) public recipientToRole;
 
     constructor() public ERC721("ID (H)activist", "IDH") {}
 
-    function mintTo(
-        address recipient,
-        uint256 role,
-        string calldata metadataUri
-    ) public returns (uint256) {
-        // 2 Hackers
-        // 5 Chaperons
-        // 6 Volunteers
-        require(role == 2 || role == 5 || role == 6, "Invalid role!");
+    function claim(string calldata metadataUri) public {
+        require(recipientToRole[msg.sender] > 0, "Claimer not whitelisted!");
         require(
-            balanceOf(recipient) == 0,
-            "Recipient can have only one idHacktavist NFT"
+            balanceOf(msg.sender) == 0,
+            "Claimer can have only one idHacktavist NFT"
         );
 
         currentTokenId.increment();
         uint256 tokenId = currentTokenId.current();
 
-        require(tokenId <= 300, "All badges are already minted!");
-
-        _safeMint(recipient, tokenId);
+        _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, metadataUri);
-        tokenToRole[tokenId] = role;
-        isInitialOwner[recipient] = true;
+        tokenToRole[tokenId] = recipientToRole[msg.sender];
+        isInitialOwner[msg.sender] = true;
+        emit Claimed();
+    }
 
-        return tokenId;
+    function whitelistRole(uint256 role, address[] calldata recipients)
+        public
+        onlyOwner
+    {
+        require(role == 2 || role == 5 || role == 6, "Invalid role!");
+        require(recipients.length <= 100, "Too many recipients");
+        for (uint256 i = 0; i < recipients.length; i++) {
+            recipientToRole[recipients[i]] = role;
+        }
+        emit Whitelisted();
     }
 }
